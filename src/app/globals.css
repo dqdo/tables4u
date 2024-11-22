@@ -16,6 +16,44 @@
 
 body {
   color: var(--foreground);
-  background: var(--background);
+  background: white;
   font-family: Arial, Helvetica, sans-serif;
 }
+
+.button {
+  background: black;
+  padding: 5px;
+}
+
+.emailAddressContainer{
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+.passwordContainer{
+  margin-bottom: 5px;
+}
+
+.loginManager{
+  margin-left: 20px;
+}
+
+.enterCredentials{
+  color: black;
+  border-color: black;
+  margin: 5px;
+}
+
+.closeLogin{
+  color: white;
+}
+
+.enterLogin{
+  color: white;
+}
+
+.loginButtonContainer{
+  position: absolute;
+  left: 80%;
+}
+
