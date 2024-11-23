@@ -54,6 +54,10 @@ export default function Home() {
     setLoginRole(null);
   };
 
+  function createConstant(){
+
+  }
+
   return (
     <div>
       <div className="loginButtonContainer">
@@ -63,12 +67,17 @@ export default function Home() {
         <button data-testid="loginManager" className="button loginManager" onClick={() => showLogin('Manager')}>
           Login Manager
         </button>
-
         {loginRole && <Login role={loginRole} closeLogin={closeLogin} />}
-
       </div>
+  
 
       <button className="button">List Restaurants</button>
+      <h1>Adjust Constants</h1>
+      
+      name: <input className="text" id="constant-name"/>&nbsp;
+      value: <input className="text" id="constant-value"/>&nbsp;
+      <button className="button" onClick={(e) => createConstant()}>Create</button><p></p>
+
     </div>
   );
 }
