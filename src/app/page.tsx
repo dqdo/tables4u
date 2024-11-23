@@ -4,6 +4,14 @@ import Image from "next/image";
 import React, { useState } from "react";
 import { useRouter } from 'next/navigation';
 
+import axios from "axios";
+
+// all WEB traffic using this API instance. You should replace this endpoint with whatever
+// you developed for the tutorial and adjust resources as necessary.
+const instance = axios.create({
+  baseURL: 'https://xx0uqht4q7.execute-api.us-east-2.amazonaws.com/six'
+});
+
 function Login({ role, closeLogin }) {
 
   const router = useRouter();
@@ -38,6 +46,10 @@ function Login({ role, closeLogin }) {
   );
 }
 
+
+
+
+
 export default function Home() {
   const [loginRole, setLoginRole] = useState<string | null>(null);;
   const [redraw, forceRedraw] = React.useState(0)
@@ -45,6 +57,29 @@ export default function Home() {
   function andRefreshDisplay() {
     forceRedraw(redraw + 1)
   }
+
+  function createConstant() {
+    // potentially modify the model
+    let name = document.getElementById("constant-name") as HTMLInputElement
+    let value = document.getElementById("constant-value") as HTMLInputElement
+    if (name && value) {
+      
+      // Access the REST-based API and in response (on a 200 or 400) process.
+      instance.post('/constants', {"name":name.value, "value":value.value})
+      .then(function (response) {
+        // not sure what to do ON failure?
+        name.value = ''
+        value.value = ''
+  
+  
+        andRefreshDisplay()
+      })
+      .catch(function (error) {
+        console.log(error)
+      })
+    }
+  }
+  
 
   const showLogin = (role: string) => {
     setLoginRole(role);
@@ -54,9 +89,7 @@ export default function Home() {
     setLoginRole(null);
   };
 
-  function createConstant(){
-
-  }
+  
 
   return (
     <div>
@@ -72,10 +105,9 @@ export default function Home() {
   
 
       <button className="button">List Restaurants</button>
-      <h1>Adjust Constants</h1>
-      
+      <h1>Create Restaurant</h1>
       name: <input className="text" id="constant-name"/>&nbsp;
-      value: <input className="text" id="constant-value"/>&nbsp;
+      name: <input className="text" id="constant-address"/>&nbsp;
       <button className="button" onClick={(e) => createConstant()}>Create</button><p></p>
 
     </div>
