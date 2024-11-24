@@ -1,4 +1,4 @@
-// File: C:\Users\wpiguest\Final\temp\src\app\layout.tsx
+// File: C:\Users\dand0\Desktop\CS3733\tables4u\tables4u\src\app\layout.tsx
 import * as entry from '../../../src/app/layout.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 
