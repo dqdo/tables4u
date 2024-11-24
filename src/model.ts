@@ -18,9 +18,7 @@ export class Restaurant {
        
     }
 
-    toString() {
-        return this.name + "=" + this.location
-    }
+   
 
     
 }

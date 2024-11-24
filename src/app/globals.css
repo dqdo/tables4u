@@ -72,5 +72,24 @@ body {
   left: 80%;
 }
 
+.score {
+  position: absolute;
+  left: 100px;
+  top: 150px;
+}
+
+.Title{
+  position: absolute;
+  left: 700px;
+  top: 80px;
+}
+
+
+
+.Restaurants{
+  position: absolute;
+  left: 700px;
+  top: 100px;
+}
 
 
