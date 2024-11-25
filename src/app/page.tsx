@@ -25,8 +25,10 @@ export default function Home() {
   const [RetrieveRestaurant, setRetrieveRestaurant] = useState('');
   const [administratorPassword, setadministratorPassword] = useState('');
   const [administratorID, setadministratorID] = useState('');
- 
+
   const [restaurantNameList, setRestaurantNameList] = useState<string[]>([]);
+
+  const [managerPassword, setmanagerPassword] = useState('');
   // Whenever 'redraw' changes (and there are no loaded constants) this fetches from API
   React.useEffect( () => {
     if (!constants) {
@@ -76,24 +78,34 @@ export default function Home() {
 
 
   function Login({ role, closeLogin }) {
-    retrieveAdministrator();
-
+   
     const [ID, setID] = useState('');
     const [password, setPassword] = useState('');
+    const router = useRouter();
+
+    retrieveAdministrator();
+   
+
+
 
     const handleLogin = async () => {
-   
-  alert(administratorID)
+      const result= await retrieveManager(Number(ID));
+     
+ 
       if (role === 'Administrator' && ID==administratorID && administratorPassword==password) {
         router.push('/pages/admin');
-        setadministratorID("")
-        setadministratorPassword("")
-      } else if (role === 'Manager') {
-        router.push('/pages/manager');
+        setadministratorID("");
+        setadministratorPassword("");
+      } else if (role === 'Manager' &&  result==password) {
+     
+          router.push('/pages/manager');
+          setmanagerPassword("");
+        }
       }
-    };
+   
+    
 
-    const router = useRouter();
+
   
     return (
       <div className="enterCredentials">
@@ -124,6 +136,33 @@ export default function Home() {
 
   }
 
+
+  async function retrieveManager(id: number): Promise<string> {
+    try {
+      // Make the HTTP request and await the response
+      const response = await instance.get('/restaurants');
+      let password;
+      let status = response.data.statusCode;
+   
+      if(status==200){
+        // Iterate through constants and check for the matching restaurant_id
+        for (let con of response.data.constants) {
+          if (con.restaurant_id === id) {
+            // Set the manager's password
+            const password =con.password
+            setmanagerPassword(con.password);
+            return password
+          }
+        }}
+
+        
+      
+     
+    } catch (error) {
+      console.error(error);
+      return ""; // Return empty string or handle error as needed
+    }
+  }
 
 
 function retrieveAdministrator(): string{
