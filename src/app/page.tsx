@@ -15,7 +15,7 @@ const instance = axios.create({
 export default function Home() {
   const [loginRole, setLoginRole] = useState<string | null>(null);;
   const [redraw, forceRedraw] = React.useState(0)
-  const [constants, setConstants] = React.useState('')   // state from the AWS API
+  const [constants, setConstants] = React.useState('')
   const [restaurantName, setRestaurantName] = useState('');
   const [restaurantLocation, setRestaurantLocation] = useState('');
   const [RetrieveRestaurant, setRetrieveRestaurant] = useState('');
@@ -28,8 +28,7 @@ export default function Home() {
   // Whenever 'redraw' changes (and there are no loaded constants) this fetches from API
   React.useEffect(() => {
     if (!constants) {
-      retrieveConstants(setConstants)
-      console.log("constants:", constants)
+      retrieveCredentials()
     }
   }, [redraw])
 
@@ -37,7 +36,7 @@ export default function Home() {
     forceRedraw(redraw + 1)
   }
 
-  function retrieveConstants(setConstants: React.Dispatch<React.SetStateAction<string>>) {
+  function retrieveCredentials() {
     let constantsString = '';
     instance.get('/restaurants')
       .then(function (response) {
@@ -52,7 +51,6 @@ export default function Home() {
             }
           }
         }
-
         setRetrieveRestaurant(constantsString)
         return constantsString
 
@@ -61,13 +59,9 @@ export default function Home() {
         console.log(error);
         return ""
       });
-
-
-
-    // Return the constants string
   }
 
-  function Login({ role, closeLogin }) {
+  function Login({ role, closeLogin }: any) {
 
     const [ID, setID] = useState('');
     const [password, setPassword] = useState('');
@@ -115,7 +109,7 @@ export default function Home() {
   }
 
 
-  async function retrieveManager(id: number): Promise<string> {
+  async function retrieveManager(id: number) {
     try {
       // Make the HTTP request and await the response
       const response = await instance.get('/restaurants');
@@ -179,7 +173,7 @@ export default function Home() {
           // Concatenate the constant names and values into a string
           for (let con of response.data.constants) {
 
-            const restaurantList = response.data.constants.filter(con => "active" == con.status).map(con => con.restaurant_name);
+            const restaurantList = response.data.constants.filter((con: { status: string; }) => "active" == con.status).map((con: { restaurant_name: any; }) => con.restaurant_name);
 
             setRestaurantNameList(restaurantList);
           }
@@ -198,15 +192,17 @@ export default function Home() {
   }
 
 
-  function createConstant() {
-
-    // potentially modify the model
+  function createRestaurant() {
 
     if (restaurantName && restaurantLocation) {
 
       instance.post('/restaurants', { name: restaurantName, location: restaurantLocation })
         .then(function (response) {
+          let status = response.data.statusCode;
 
+          if (status == 200) {
+            console.log("Created restaurant")
+          }
           andRefreshDisplay()
         })
         .catch(function (error) {
@@ -215,7 +211,6 @@ export default function Home() {
     }
   }
 
-
   const showLogin = (role: string) => {
     setLoginRole(role);
   };
@@ -223,8 +218,6 @@ export default function Home() {
   const closeLogin = () => {
     setLoginRole(null);
   };
-
-
 
   return (
     <div>
@@ -245,7 +238,7 @@ export default function Home() {
       name: <input className="text" value={restaurantName} onChange={(e) => setRestaurantName(e.target.value)} />&nbsp;
       location: <input className="text" value={restaurantLocation} onChange={(e) => setRestaurantLocation(e.target.value)} />&nbsp;
 
-      <button className="button" onClick={createConstant}>Create</button><p></p>
+      <button className="button" onClick={createRestaurant}>Create</button><p></p>
       <label className="score">{RetrieveRestaurant}</label>
 
       <label className="Title">{"restaurant List"}</label>

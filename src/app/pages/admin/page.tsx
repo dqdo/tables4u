@@ -12,19 +12,15 @@ const instance = axios.create({
     baseURL: 'https://xx0uqht4q7.execute-api.us-east-2.amazonaws.com/12'
 });
 
-
 export default function Home() {
     const [redraw, forceRedraw] = React.useState(0)
     const [restaurantList, setRestaurantList] = useState<{ id: number; name: string }[]>([]);
     const [restaurantID, setRestaurantID] = useState<number | string>("");
-
+    const router = useRouter();
 
     function andRefreshDisplay() {
         forceRedraw(redraw + 1)
     }
-
-
-    const router = useRouter();
 
     const handleSignout = () => {
         router.push("/..")
@@ -47,21 +43,22 @@ export default function Home() {
             .catch(function (error) {
                 console.error(error);
             });
-        
+
     }
 
     function deleteRestaurant(): void {
         instance.post('/restaurants/deleted_restaurants', { restaurant_id: restaurantID })
             .then(function (response) {
+                let status = response.data.statusCode;
+                if (status == 200) {
+                    console.log("Deleted restaurant: " + restaurantID)
+                }
                 andRefreshDisplay()
             })
             .catch(function (error) {
                 console.log(error)
             })
-           
     }
-
-    
 
     return (
         <div>
@@ -79,11 +76,11 @@ export default function Home() {
 
             <label> Delete Restaurant - </label>
             id: <input type="text" className="text" value={restaurantID} onChange={(e) => {
-                    const value = e.target.value;
-                    if (value === "" || !isNaN(Number(value))) {
-                        setRestaurantID(value);
-                    }
-                }}
+                const value = e.target.value;
+                if (value === "" || !isNaN(Number(value))) {
+                    setRestaurantID(value);
+                }
+            }}
             />
             <button className="button" onClick={deleteRestaurant} >{"Delete Restaurant"}</button>
         </div>
