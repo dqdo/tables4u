@@ -37,8 +37,12 @@ body {
   border-bottom: 1px solid #333333;
   border-left: 1px solid #CCCCCC;
   padding: 10px;
+  margin: 5px;
 }
 
+.button:active {
+  transform: scale(0.95);
+}
 
 
 .emailAddressContainer{
@@ -61,16 +65,28 @@ body {
 }
 
 .closeLogin{
-  color: white;
+  color: black;
 }
 
 .enterLogin{
-  color: white;
+  color: black;
 }
 
 .loginButtonContainer{
   position: absolute;
   left: 80%;
+}
+
+.restaurantInfo {
+  position: absolute;
+  left: 100px;
+  top: 150px;
+}
+
+
+.loginButtonContainer{
+  position: absolute;
+  left: 83%;
 }
 
 .score {
@@ -83,56 +99,6 @@ body {
   position: absolute;
   left: 700px;
   top: 80px;
-}
-
-
-
-.Restaurants{
-  position: absolute;
-  left: 700px;
-  top: 100px;
-}
-
-.loginButtonContainer{
-  position: absolute;
-  left: 80%;
-}
-
-.score {
-  position: absolute;
-  left: 100px;
-  top: 150px;
-}
-
-.Title{
-  position: absolute;
-  left: 700px;
-  top: 80px;
-}
-
-.open{
-  position: absolute;
-  left: 50px;
-  top: 350px;
-}
-
-.close{
-  position: absolute;
-  left: 180px;
-  top: 350px;
-}
-
-
-.name{
-  position: absolute;
-  left: 50px;
-  top: 250px;
-}
-
-.location{
-  position: absolute;
-  left: 180px;
-  top: 270px;
 }
 
 .table{
@@ -140,7 +106,6 @@ body {
   left: 400px;
   top: 250px;
 }
-
 
 .function{
 display : none;
@@ -154,14 +119,55 @@ display : none;
 
 .tables{
   position: absolute;
-  left: 70%;
-  top: 200px;
+  left: 80%;
+  
 }
 
 .editRestaurantContainer{
-  position: relative;
+  position: absolute;
   align-items: center;
   display: flex;
   justify-content: center;
   flex-direction: column;
+  right: 86%;
+  border: black 2px solid;
+}
+
+.restaurantInfoContainer{
+  position: absolute;
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  right: 40%;
+  border: black 2px solid;
+}
+
+.listRestaurant{
+  position: absolute;
+  right:90%;
+}
+
+.createRestaurantContainer{
+  position: absolute;
+  justify-content: center;
+  flex-direction: column;
+  display: flex;
+  border: 1px solid black;
+  width: 200px;
+  height: 250px;
+  left: 85%;
+  top: 65%
+}
+
+.credentialInfo{
+  position: absolute;
+  left: 85%;
+  top: 92%;
+}
+
+.restaurantList{
+  position: absolute;
+  right: 89%;
+  top: 5%
 }

@@ -37,7 +37,7 @@ export default function Home() {
   }
 
   const handleSignout = () => {
-    router.push("/..")
+    router.push("/")
   };
 
   useEffect(() => {
@@ -185,11 +185,12 @@ export default function Home() {
       <div>Your ID is: {rid} </div>
       <div className="editRestaurantContainer">
         <label>Edit Restaurant</label>
-        name: <input className="text" value={restaurantName} onChange={(e) => {
+        <hr style={{ border: '1px solid black', width: '100%' }} />
+        Name: <input className="text" value={restaurantName} onChange={(e) => {
           setRestaurantName(e.target.value);
 
         }} />
-        location: <input className="text" value={restaurantLocation} onChange={(e) => {
+        Location: <input className="text" value={restaurantLocation} onChange={(e) => {
           setRestaurantLocation(e.target.value);
         }} />
         Open Time: <input className="text" value={openTime} onChange={(e) => {
@@ -205,15 +206,18 @@ export default function Home() {
           }
         }} />
         <button className="button" onClick={() => editRestaurant(restaurantName, restaurantLocation, Number(openTime), Number(closeTime), Number(rid))} >Edit Restaurant</button>
+        <button className="button" onClick={activateRestaurant}> Activate Restaurant</button>
+        <button className="button" onClick={deleteRestaurant}> Delete Restaurant</button>
 
+        <hr style={{ border: '1px solid black', width: '100%' }} />
+        <label> Create Table </label>
+        <hr style={{ border: '1px solid black', width: '100%' }} />
         Table Number: <input className="text" value={tableNumber} onChange={(e) => {
           const value = e.target.value;
           if (value === "" || !isNaN(Number(value))) {
             setTableNumber(value);
           }
         }} />
-
-        <button className="button" onClick={() => createTable(Number(rid), Number(seatNumber), Number(tableNumber))} >Create a Table</button>
 
         Number of Seats: <input className="text" value={seatNumber} onChange={(e) => {
           const value = e.target.value;
@@ -222,7 +226,11 @@ export default function Home() {
           }
         }} />
 
-        TableId: <input className="text" value={tableIdNumber} onChange={(e) => {
+        <button className="button" onClick={() => createTable(Number(rid), Number(seatNumber), Number(tableNumber))} >Create a Table</button>
+        <hr style={{ border: '1px solid black', width: '100%' }} />
+        <label> Edit Number of Seats for a Table </label>
+        <hr style={{ border: '1px solid black', width: '100%' }} />
+        Table ID: <input className="text" value={tableIdNumber} onChange={(e) => {
           const value = e.target.value;
           if (value === "" || !isNaN(Number(value))) {
             setTableIdNumber(value);
@@ -231,32 +239,32 @@ export default function Home() {
 
         <button className="button" onClick={() => editSeatNumber(Number(tableIdNumber), Number(seatNumber), "available")} >Edit Number of Seats</button>
         <button className="button" onClick={handleSignout}>Sign Out</button>
-        <button className="button" onClick={activateRestaurant}> Activate Restaurant</button>
-        <button className="button" onClick={deleteRestaurant}> Delete Restaurant</button>
+
 
       </div>
 
       <label className="tables">
         Table List:
+        <hr style={{ border: '1px solid black', width: '100%' }} />
         {tableList.map((tableList) => (
           <div key={tableList.table_id}>
-            tableid: {tableList.table_id}    seats: {tableList.seats}  tableNumber: {tableList.table_number}
+            Table ID: {tableList.table_id} | Seats: {tableList.seats} | Table Number: {tableList.table_number}
           </div>
         ))}
       </label>
 
-      <h1> Restaurant</h1>
-      <label className="name">{"name: " + restaurantNameDisp}</label>
-      <label className="location">{"location: " + restaurantLocationDisp}</label>
-      <label className="close">{"Open Time: " + closeTimeDisp}</label>
-      <label className="open">{"Close Time: " + openTimeDisp}</label>
-
+      <div className="restaurantInfoContainer">
+        <label style={{margin: '5px'}}> Restaurant Information </label>
+        <hr style={{ border: '1px solid black', width: '100%' }} />
+        <label className="name">{"Name: " + restaurantNameDisp}</label>
+        <label className="location">{"Location: " + restaurantLocationDisp}</label>
+        <label className="close">{"Open Time: " + closeTimeDisp}</label>
+        <label className="open">{"Close Time: " + openTimeDisp}</label>
+      </div>
 
       <label className="function">{"" + retrieveRestaurant(Number(rid))}</label>
       <label className="function">{"" + retrieveTableList(Number(rid))}</label>
     </div>
-
-
 
   );
 }

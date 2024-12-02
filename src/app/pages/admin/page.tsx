@@ -23,7 +23,7 @@ export default function Home() {
     }
 
     const handleSignout = () => {
-        router.push("/..")
+        router.push("/")
     };
 
     function retrieveRestaurants(): void {
@@ -63,10 +63,9 @@ export default function Home() {
     return (
         <div>
             <button className="button" onClick={retrieveRestaurants}>{"List Restaurants"}</button>
-            <button className="button" onClick={handleSignout}>Sign Out</button>
+            
 
-            <label className="Restaurants">
-                Restaurant List:
+            <label className="restaurantList">
                 {restaurantList.map((restaurant) => (
                     <div key={restaurant.id}>
                         {restaurant.id}: {restaurant.name}
@@ -75,7 +74,7 @@ export default function Home() {
             </label>
 
             <label> Delete Restaurant - </label>
-            id: <input type="text" className="text" value={restaurantID} onChange={(e) => {
+            ID: <input type="text" className="text" value={restaurantID} onChange={(e) => {
                 const value = e.target.value;
                 if (value === "" || !isNaN(Number(value))) {
                     setRestaurantID(value);
@@ -83,6 +82,7 @@ export default function Home() {
             }}
             />
             <button className="button" onClick={deleteRestaurant} >{"Delete Restaurant"}</button>
+            <button className="button" onClick={handleSignout}>Sign Out</button>
         </div>
     );
 }

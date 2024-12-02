@@ -47,7 +47,7 @@ export default function Home() {
           for (let con of response.data.constants) {
 
             if (restaurantName == con.restaurant_name) {
-              constantsString = `password: ${con.password}    ID: ${con.restaurant_id}`; // Adjust format as needed
+              constantsString = `Password: ${con.password} | ID: ${con.restaurant_id}`; 
             }
           }
         }
@@ -232,22 +232,27 @@ export default function Home() {
         {loginRole && <Login role={loginRole} closeLogin={closeLogin} />}
       </div>
 
-      <button className="button" onClick={() => retrieveRestaurants()}>List Restaurants</button>
+      <button className="button listRestaurant" onClick={() => retrieveRestaurants()}>List Restaurants</button>
 
-      <h1>Create Restaurant</h1>
-      name: <input className="text" value={restaurantName} onChange={(e) => setRestaurantName(e.target.value)} />&nbsp;
-      location: <input className="text" value={restaurantLocation} onChange={(e) => setRestaurantLocation(e.target.value)} />&nbsp;
+      <div className="createRestaurantContainer">
+      <label style={{marginLeft: '2px'}}>Create a Restaurant</label>
+      <hr style={{ border: '1px solid black', width: '100%' }} />
+      <label style={{marginLeft: '2px'}}>Name: </label>
+      <input style={{width: "90%"}} className="text" value={restaurantName} onChange={(e) => setRestaurantName(e.target.value)} />&nbsp;
+      <label style={{marginLeft: '2px'}}>Location: </label>
+      <input style={{width: "90%"}} className="text" value={restaurantLocation} onChange={(e) => setRestaurantLocation(e.target.value)} />&nbsp;
+      <button style={{width: "50%"}} className="button" onClick={createRestaurant}>Create</button><p></p>
+      </div>
 
-      <button className="button" onClick={createRestaurant}>Create</button><p></p>
-      <label className="score">{RetrieveRestaurant}</label>
-
-      <label className="Title">{"restaurant List"}</label>
-      <label className="Restaurants">
-
+      <label style={{margin: '5px'}} className="credentialInfo">{RetrieveRestaurant}</label>
+     
+      <label className="restaurantList">
+      <hr style={{ border: '1px solid black', width: '100%' }} />
         {restaurantNameList.map((name, index) => (
           <div key={index}>{name}</div>
         ))}
       </label>
+  
 
     </div>
   );
