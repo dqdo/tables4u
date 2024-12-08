@@ -18,10 +18,6 @@ export default function Home() {
     const [restaurantID, setRestaurantID] = useState<number | string>("");
     const router = useRouter();
 
-    function andRefreshDisplay() {
-        forceRedraw(redraw + 1)
-    }
-
     const handleSignout = () => {
         router.push("/")
     };
@@ -37,7 +33,6 @@ export default function Home() {
                         name: con.restaurant_name,
                     }));
                     setRestaurantList(restaurants);
-                    andRefreshDisplay();
                 }
             })
             .catch(function (error) {
@@ -53,7 +48,6 @@ export default function Home() {
                 if (status == 200) {
                     console.log("Deleted restaurant: " + restaurantID)
                 }
-                andRefreshDisplay()
             })
             .catch(function (error) {
                 console.log(error)
