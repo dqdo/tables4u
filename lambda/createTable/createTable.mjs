@@ -4,14 +4,14 @@ export const handler = async (event) => {
 // get credentials from the db_access layer (loaded separately via AWS console)
 // Make sure to delete this when copy and pasting to VScode or React Application BEFORE committing.
 
-const editRestaurantTableSeatNumber = (restaurant_id, seats, table_number, availability = 'available') => {
+const editRestaurantTableSeatNumber = (restaurant_id, seats, table_number) => {
     return new Promise((resolve, reject) => {
       
       const insertQuery = `
-        INSERT INTO restaurant_tables (restaurant_id, seats, table_number, availability)
-        VALUES (?,?,?,?)`;
+        INSERT INTO restaurant_tables (restaurant_id, seats, table_number)
+        VALUES (?,?,?)`;
 
-        const insertParams = [restaurant_id, seats, table_number, availability];
+        const insertParams = [restaurant_id, seats, table_number];
 
         pool.query(insertQuery, insertParams, (insertError, insertResults) => {
           if (insertError) {
@@ -25,7 +25,7 @@ const editRestaurantTableSeatNumber = (restaurant_id, seats, table_number, avail
 
   let response
   try{
-    await editRestaurantTableSeatNumber(event.restaurant_id, event.seats, event.table_number, event.availability)
+    await editRestaurantTableSeatNumber(event.restaurant_id, event.seats, event.table_number)
 
     response = {
         statusCode: 200,

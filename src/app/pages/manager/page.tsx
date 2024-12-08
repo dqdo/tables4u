@@ -29,12 +29,17 @@ export default function Home() {
   const [rid, setRestaurantID] = useState<number | null>(null);
   const [restaurantName, setRestaurantName] = useState('');
   const [restaurantLocation, setRestaurantLocation] = useState('');
+  const [totalSeats, setTotalSeats] = useState(0);
+  const [usedSeats, setUsedSeats] = useState(0);
   const router = useRouter();
+  const [status, setStatus] = useState('');
+  const [year, setYear] = useState("");
+  const [month, setMonth] = useState("");
+  const [day, setDay] = useState("");
+  const [close_date, setClosedDate] = useState("");
+  const [list_closed_dates, setListClosedDates] = useState<{ id: number, restaurant_id: number; restaurant_date: any }[]>([]);
 
 
-  function andRefreshDisplay() {
-    forceRedraw(redraw + 1)
-  }
 
   const handleSignout = () => {
     router.push("/")
@@ -46,6 +51,14 @@ export default function Home() {
       setRestaurantID(parseInt(savedRestaurantID, 10));
     }
   }, []);
+
+  useEffect(() => {
+    if (rid) {
+      retrieveRestaurant(rid);
+      retrieveTableList(rid);
+      getClosedDays(rid)
+    }
+  }, [rid]);
 
   useEffect(() => {
     setRestaurantName(restaurantNameDisp);
@@ -60,7 +73,7 @@ export default function Home() {
         if (status == 200) {
           console.log("Edited restaurant")
         }
-        andRefreshDisplay()
+        retrieveRestaurant(restaurantId)
       })
       .catch(function (error) {
         console.log(error)
@@ -68,27 +81,32 @@ export default function Home() {
   }
 
   function createTable(restaurantId: number, seats: number, tableNumber: number) {
+    if (!tableNumber || !seats) {
+      console.log("Please enter both table number and seats")
+      return;
+    }
+
     instance.post('/restaurant_tables/createTable', { restaurant_id: restaurantId, seats: seats, table_number: tableNumber })
       .then(function (response) {
         let status = response.data.statusCode;
         if (status == 200) {
           console.log("Created table " + tableIdNumber + " for restaurant " + restaurantId + " with " + seats + " seats")
         }
-        andRefreshDisplay()
+        retrieveTableList(restaurantId);
       })
       .catch(function (error) {
         console.log(error)
       })
   }
 
-  function editSeatNumber(tableId: number, seats: number, availability: string) {
-    instance.post('/restaurant_tables', { table_id: tableId, seats: seats, availability: availability })
+  function editSeatNumber(tableId: number, seats: number, restaurantId: number) {
+    instance.post('/restaurant_tables', { table_id: tableId, seats: seats, restaurant_id: restaurantId })
       .then(function (response) {
         let status = response.data.statusCode;
         if (status == 200) {
           console.log("Edited table: " + rid + " - seats: " + seats)
         }
-        andRefreshDisplay()
+        retrieveTableList(restaurantId)
       })
       .catch(function (error) {
         console.log(error)
@@ -104,7 +122,6 @@ export default function Home() {
 
           console.log("Deleted restaurant: " + rid)
         }
-        andRefreshDisplay();
         handleSignout();
       })
       .catch(function (error) {
@@ -120,7 +137,6 @@ export default function Home() {
         if (status == 200) {
           console.log("Activated restaurant: " + rid)
         }
-        andRefreshDisplay();
         handleSignout();
       })
       .catch(function (error) {
@@ -144,7 +160,6 @@ export default function Home() {
           }));
           setTableList(restaurants);
         }
-        andRefreshDisplay();
       })
       .catch(function (error) {
 
@@ -152,6 +167,29 @@ export default function Home() {
         return ""
       });
   }
+
+
+  function getClosedDays(rid: number) {
+    instance.post('/close_days/get_closed_days', { restaurant_id: rid })
+      .then(function (response) {
+        let status = response.data.statusCode;
+        if (status === 200) {
+          const r_closed_dates = response.data.restaurant_date.map((con: any) => {
+            const validDate = new Date(con.restaurant_date);
+            const displayDate = validDate.toISOString().split('T')[0];
+            return {
+              restaurant_id: con.restaurant_id,
+              restaurant_date: displayDate 
+            };
+          });
+          setListClosedDates(r_closed_dates);
+        }
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+  }
+
 
   function retrieveRestaurant(rid: number) {
     instance.get('/restaurants')
@@ -166,10 +204,10 @@ export default function Home() {
               setOpenTimeDisp(con.open_time)
               setRestaurantLocationDisp(con.restaurant_location)
               setRestaurantNameDisp(con.restaurant_name)
+              setStatus(con.status)
               return ""
             }
           }
-          andRefreshDisplay();
         }
         return ""
       })
@@ -179,6 +217,63 @@ export default function Home() {
       });
   }
 
+  const generateOptions = (start: any, end: any) => {
+    const options = [];
+    for (let i = start; i <= end; i++) {
+      options.push(
+        <option key={i} value={i}>
+          {i}
+        </option>
+      );
+    }
+    return options;
+  };
+
+  const setDate = () => {
+    if (!year || !month || !day) {
+      console.log("Please select a valid year, month, and day.");
+      return;
+    }
+    const formattedDate = `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
+    setClosedDate(formattedDate);
+    console.log("Date: " + formattedDate)
+  };
+
+  function closeFutureDay(close_date: string) {
+    if (!year || !month || !day) {
+      console.log("Please select a valid year, month, and day.");
+      return;
+    }
+    instance.post('/close_days', { restaurant_date: close_date, restaurant_id: rid })
+      .then(function (response) {
+        let status = response.data.statusCode;
+        if (status == 200) {
+          console.log("Closed on: " + close_date)
+        }
+      })
+      .catch(function (error) {
+        console.log(error)
+      })
+  }
+
+  function openFutureDay(close_date: string) {
+    if (!year || !month || !day) {
+      console.log("Please select a valid year, month, and day.");
+      return;
+    }
+    instance.post('/close_days/open_days', { restaurant_date: close_date, restaurant_id: rid })
+      .then(function (response) {
+        let status = response.data.statusCode;
+        if (status == 200) {
+          console.log("Opened on: " + close_date)
+        }
+      })
+      .catch(function (error) {
+        console.log(error)
+      })
+
+  }
+
 
   return (
     <div>
@@ -186,61 +281,57 @@ export default function Home() {
       <div className="editRestaurantContainer">
         <label>Edit Restaurant</label>
         <hr style={{ border: '1px solid black', width: '100%' }} />
-        Name: <input className="text" value={restaurantName} onChange={(e) => {
-          setRestaurantName(e.target.value);
 
-        }} />
-        Location: <input className="text" value={restaurantLocation} onChange={(e) => {
-          setRestaurantLocation(e.target.value);
-        }} />
-        Open Time: <input className="text" value={openTime} onChange={(e) => {
-          const value = e.target.value;
-          if (value === "" || !isNaN(Number(value))) {
-            setOpenTime(value);
-          }
-        }} />
-        Close Time: <input className="text" value={closeTime} onChange={(e) => {
-          const value = e.target.value;
-          if (value === "" || !isNaN(Number(value))) {
-            setCloseTime(value);
-          }
-        }} />
-        <button className="button" onClick={() => editRestaurant(restaurantName, restaurantLocation, Number(openTime), Number(closeTime), Number(rid))} >Edit Restaurant</button>
-        <button className="button" onClick={activateRestaurant}> Activate Restaurant</button>
+        {status === 'active' ? (
+          <p>Restaurant is active. Editing and table management are disabled.</p>) : (
+          <>
+            Name: <input className="text" value={restaurantName} onChange={(e) => setRestaurantName(e.target.value)} />
+            Location: <input className="text" value={restaurantLocation} onChange={(e) => setRestaurantLocation(e.target.value)} />
+            Open Time: <input className="text" value={openTime} onChange={(e) => {
+              const value = e.target.value;
+              if (value === "" || !isNaN(Number(value))) {
+                setOpenTime(value);
+              }
+            }} />
+            Close Time: <input className="text" value={closeTime} onChange={(e) => {
+              const value = e.target.value;
+              if (value === "" || !isNaN(Number(value))) {
+                setCloseTime(value);
+              }
+            }} />
+            <button className="button" onClick={() => editRestaurant(restaurantName, restaurantLocation, Number(openTime), Number(closeTime), Number(rid))}>Edit Restaurant</button>
+            <button className="button" onClick={activateRestaurant}>Activate Restaurant</button>
+            <button className="button" onClick={deleteRestaurant}>Delete Restaurant</button>
+
+            <hr style={{ border: '1px solid black', width: '100%' }} />
+            <label>Create Table</label>
+            Table Number: <input className="text" value={tableNumber} onChange={(e) => {
+              const value = e.target.value;
+              if (value === "" || !isNaN(Number(value))) {
+                setTableNumber(value);
+              }
+            }} />
+            Number of Seats: <input className="text" value={seatNumber} onChange={(e) => {
+              const value = e.target.value;
+              if (value === "" || !isNaN(Number(value))) {
+                setSeatNumber(value);
+              }
+            }} />
+
+            <button className="button" onClick={() => createTable(Number(rid), Number(seatNumber), Number(tableNumber))}>Create a Table</button>
+            <hr style={{ border: '1px solid black', width: '100%' }} />
+            <label>Edit Number of Seats for a Table</label>
+            Table ID: <input className="text" value={tableIdNumber} onChange={(e) => {
+              const value = e.target.value;
+              if (value === "" || !isNaN(Number(value))) {
+                setTableIdNumber(value);
+              }
+            }} />
+            <button className="button" onClick={() => editSeatNumber(Number(tableIdNumber), Number(seatNumber), Number(rid))}>Edit Number of Seats</button>
+          </>
+        )}
         <button className="button" onClick={deleteRestaurant}> Delete Restaurant</button>
-
-        <hr style={{ border: '1px solid black', width: '100%' }} />
-        <label> Create Table </label>
-        <hr style={{ border: '1px solid black', width: '100%' }} />
-        Table Number: <input className="text" value={tableNumber} onChange={(e) => {
-          const value = e.target.value;
-          if (value === "" || !isNaN(Number(value))) {
-            setTableNumber(value);
-          }
-        }} />
-
-        Number of Seats: <input className="text" value={seatNumber} onChange={(e) => {
-          const value = e.target.value;
-          if (value === "" || !isNaN(Number(value))) {
-            setSeatNumber(value);
-          }
-        }} />
-
-        <button className="button" onClick={() => createTable(Number(rid), Number(seatNumber), Number(tableNumber))} >Create a Table</button>
-        <hr style={{ border: '1px solid black', width: '100%' }} />
-        <label> Edit Number of Seats for a Table </label>
-        <hr style={{ border: '1px solid black', width: '100%' }} />
-        Table ID: <input className="text" value={tableIdNumber} onChange={(e) => {
-          const value = e.target.value;
-          if (value === "" || !isNaN(Number(value))) {
-            setTableIdNumber(value);
-          }
-        }} />
-
-        <button className="button" onClick={() => editSeatNumber(Number(tableIdNumber), Number(seatNumber), "available")} >Edit Number of Seats</button>
         <button className="button" onClick={handleSignout}>Sign Out</button>
-
-
       </div>
 
       <label className="tables">
@@ -253,17 +344,66 @@ export default function Home() {
         ))}
       </label>
 
+      <label className="closed_dates">
+      Closed Days:
+        <hr style={{ border: '1px solid black', width: '100%' }} />
+        {list_closed_dates.map((list_closed_dates) => (
+          <div key={list_closed_dates.restaurant_date}>
+            {list_closed_dates.restaurant_date}
+          </div>
+        ))}
+      </label>
+
       <div className="restaurantInfoContainer">
-        <label style={{margin: '5px'}}> Restaurant Information </label>
+        <label style={{ margin: '5px' }}> Restaurant Information </label>
         <hr style={{ border: '1px solid black', width: '100%' }} />
         <label className="name">{"Name: " + restaurantNameDisp}</label>
         <label className="location">{"Location: " + restaurantLocationDisp}</label>
-        <label className="close">{"Open Time: " + closeTimeDisp}</label>
-        <label className="open">{"Close Time: " + openTimeDisp}</label>
+        <label className="close">{"Close Time: " + closeTimeDisp}</label>
+        <label className="open">{"Open Time: " + openTimeDisp}</label>
+        <label className="status">{"Status: " + status}</label>
       </div>
 
-      <label className="function">{"" + retrieveRestaurant(Number(rid))}</label>
-      <label className="function">{"" + retrieveTableList(Number(rid))}</label>
+      <div className="dateInputContainer">
+        <form className="dateInput" onSubmit={(e) => e.preventDefault()}>
+          <label>
+            Year:
+            <select className="button" value={year} onChange={(e) => setYear(e.target.value)} required>
+              <option value="" disabled>
+                Select Year
+              </option>
+              {generateOptions(2024, 2050)}
+            </select>
+          </label>
+          <label>
+            Month:
+            <select className="button" value={month} onChange={(e) => setMonth(e.target.value)} required>
+              <option value="" disabled>
+                Select Month
+              </option>
+              {generateOptions(1, 12)}
+            </select>
+          </label>
+          <label>
+            Day:
+            <select className="button" value={day} onChange={(e) => setDay(e.target.value)} required>
+              <option value="" disabled>
+                Select Day
+              </option>
+              {generateOptions(1, 31)}
+            </select>
+          </label>
+          <button className="button" onClick={setDate}>
+            Set Date
+          </button>
+          <button className="button" onClick={() => closeFutureDay(close_date)}>
+            Close Future Day
+          </button>
+          <button className="button" onClick={() => openFutureDay(close_date)}>
+            Open Future Day
+          </button>
+        </form>
+      </div>
     </div>
 
   );

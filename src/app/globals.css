@@ -123,6 +123,12 @@ display : none;
   
 }
 
+.closed_dates{
+  position: absolute;
+  left: 80%;
+  top: 50%;
+}
+
 .editRestaurantContainer{
   position: absolute;
   align-items: center;
@@ -170,4 +176,16 @@ display : none;
   position: absolute;
   right: 89%;
   top: 5%
+}
+
+
+.dateInput{
+  position: absolute;
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  right: 70%;
+  top: 35%;
+  border: 1px solid black;
 }
