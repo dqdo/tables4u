@@ -144,7 +144,7 @@ export default function Home() {
       })
   }
 
-  function retrieveTableList(rid: Number): void {
+  function retrieveTableList(rid: number): void {
     instance.post('/restaurant_tables/get_tables', { restaurant_id: rid })
       .then(function (response) {
 
@@ -232,6 +232,16 @@ export default function Home() {
   const setDate = () => {
     if (!year || !month || !day) {
       console.log("Please select a valid year, month, and day.");
+      return;
+    }
+    const date = new Date(`${year}-${month}-${day}`);
+
+    if (
+      date.getFullYear() !== parseInt(year) ||
+      date.getMonth() + 1 !== parseInt(month) ||
+      date.getDate() !== parseInt(day)
+    ) {
+      console.log("Invalid date. Please enter a valid year, month, and day.");
       return;
     }
     const formattedDate = `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
