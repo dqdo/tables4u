@@ -56,7 +56,7 @@ export default function Home() {
 
     return (
         <div>
-            <button className="button" onClick={retrieveRestaurants}>{"List Restaurants"}</button>
+            <button className="button listRestaurantAdmin" onClick={retrieveRestaurants}>{"List Restaurants"}</button>
             
 
             <label className="restaurantList">
