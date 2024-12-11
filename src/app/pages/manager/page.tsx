@@ -38,6 +38,7 @@ export default function Home() {
   const [day, setDay] = useState("");
   const [close_date, setClosedDate] = useState("");
   const [list_closed_dates, setListClosedDates] = useState<{ id: number, restaurant_id: number; restaurant_date: any }[]>([]);
+  const [availabilityReport, setAvailabilityReport] = useState<{ overallUtil: string; avgAvailability: string }[]>([]);
 
 
 
@@ -179,7 +180,7 @@ export default function Home() {
             const displayDate = validDate.toISOString().split('T')[0];
             return {
               restaurant_id: con.restaurant_id,
-              restaurant_date: displayDate 
+              restaurant_date: displayDate
             };
           });
           setListClosedDates(r_closed_dates);
@@ -254,6 +255,17 @@ export default function Home() {
       console.log("Please select a valid year, month, and day.");
       return;
     }
+
+    const date = new Date(`${year}-${month}-${day}`);
+    if (
+      date.getFullYear() !== parseInt(year) ||
+      date.getMonth() + 1 !== parseInt(month) ||
+      date.getDate() !== parseInt(day)
+    ) {
+      console.log("Invalid date. Please enter a valid year, month, and day.");
+      return;
+    }
+
     instance.post('/close_days', { restaurant_date: close_date, restaurant_id: rid })
       .then(function (response) {
         let status = response.data.statusCode;
@@ -271,6 +283,18 @@ export default function Home() {
       console.log("Please select a valid year, month, and day.");
       return;
     }
+
+    const date = new Date(`${year}-${month}-${day}`);
+
+    if (
+      date.getFullYear() !== parseInt(year) ||
+      date.getMonth() + 1 !== parseInt(month) ||
+      date.getDate() !== parseInt(day)
+    ) {
+      console.log("Invalid date. Please enter a valid year, month, and day.");
+      return;
+    }
+
     instance.post('/close_days/open_days', { restaurant_date: close_date, restaurant_id: rid })
       .then(function (response) {
         let status = response.data.statusCode;
@@ -284,10 +308,31 @@ export default function Home() {
 
   }
 
+  function reviewDaysAvailability(rid: number, date: string) {
+    console.log(rid);
+    console.log(date);
+    instance
+      .post('/reservations/reviewDaysAvailability', { restaurant_id: rid, restaurant_date: date })
+      .then(function (response) {
+        const status = response.data.statusCode;
+        if (status === 200) {
+          const { averageAvailability, overallUtilization } = response.data.result.summary;
+          setAvailabilityReport([{
+            avgAvailability: averageAvailability,
+            overallUtil: overallUtilization
+          }]);
+        }
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+  }
+
+
 
   return (
     <div>
-      <div>Your ID is: {rid} </div>
+      <div className="id">Your ID is: {rid} </div>
       <div className="editRestaurantContainer">
         <label>Edit Restaurant</label>
         <hr style={{ border: '1px solid black', width: '100%' }} />
@@ -354,8 +399,19 @@ export default function Home() {
         ))}
       </label>
 
+
+      <label className="availabilityReport">
+        Availibility Report:
+        <hr style={{ border: '1px solid black', width: '100%' }} />
+        {availabilityReport.map((report) => (
+          <div key={report.avgAvailability}>
+            Average Availability: {report.avgAvailability} | Overall Utilization: {report.overallUtil}
+          </div>
+        ))}
+      </label>
+
       <label className="closed_dates">
-      Closed Days:
+        Closed Days:
         <hr style={{ border: '1px solid black', width: '100%' }} />
         {list_closed_dates.map((list_closed_dates) => (
           <div key={list_closed_dates.restaurant_date}>
@@ -376,6 +432,7 @@ export default function Home() {
 
       <div className="dateInputContainer">
         <form className="dateInput" onSubmit={(e) => e.preventDefault()}>
+          Set Date: {close_date}
           <label>
             Year:
             <select className="button" value={year} onChange={(e) => setYear(e.target.value)} required>
@@ -412,6 +469,11 @@ export default function Home() {
           <button className="button" onClick={() => openFutureDay(close_date)}>
             Open Future Day
           </button>
+          {status === 'active' && (
+            <button className="button" onClick={() => reviewDaysAvailability(Number(rid), close_date)}>
+              Review Day's Availability
+            </button>
+          )}
         </form>
       </div>
     </div>
