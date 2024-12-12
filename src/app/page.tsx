@@ -6,8 +6,6 @@ import { useRouter } from 'next/navigation';
 
 import axios from "axios";
 
-// all WEB traffic using this API instance. You should replace this endpoint with whatever
-// you developed for the tutorial and adjust resources as necessary.
 const instance = axios.create({
   baseURL: 'https://xx0uqht4q7.execute-api.us-east-2.amazonaws.com/stage11'
 });
@@ -25,11 +23,13 @@ export default function Home() {
   const [people, setNumPeople] = useState('');
   const [date, setDate] = useState('');
   const [restaurantId, setRestaurantId] = useState('');
+  const [restaurantSearchName, setRestaurantSearchName] = useState(0);
+  const [getrestaurantSearchName, setGetRestaurantSearchName] = useState<{ restaurant_id: number; restaurant_name : string; restaurant_location : string, open_time : number, close_time : number }[]>([]);
 
   const [restaurantNameList, setRestaurantNameList] = useState<string[]>([]);
 
   const [managerPassword, setmanagerPassword] = useState('');
-  // Whenever 'redraw' changes (and there are no loaded constants) this fetches from API
+
   React.useEffect(() => {
     if (!constants) {
       retrieveCredentials()
@@ -207,6 +207,34 @@ export default function Home() {
     }
   }
 
+  function getSpecificRestaurant(restaurantSearchName : any) { 
+  instance.post('/restaurants/get-specific-restaurant', {restaurantId : restaurantSearchName })
+  .then(function (response) {
+  let status = response.data.statusCode;
+
+  if (status === 200) {
+    console.log(response.data.result)
+    const restaurantSpecfic = response.data.result.map((con: any) => ({
+      
+      restaurant_id: con.restaurant_id,
+      restaurant_name : con.restaurant_name,
+      restaurant_location : con.restaurant_location,
+      open_time : con.open_time,
+      close_time : con.close_time
+      
+    }));
+
+    setGetRestaurantSearchName(restaurantSpecfic);
+
+  console.log("we got this far")
+  }
+ })
+.catch(function (error) {
+console.error("error fetching restaurant", error);
+ });
+
+}
+
   function createRestaurant() {
 
     if (restaurantName && restaurantLocation) {
@@ -280,7 +308,29 @@ export default function Home() {
           <div key={index}>{name}</div>
         ))}
       </label>
-  
+
+      <div className="findRestaurantContainer">
+      <h1>Search Reservation</h1>
+      Search Restuarant: <input className="text" value={restaurantSearchName || ""} onChange={(e) => {
+          const value = e.target.value;
+          if (value === '' || !isNaN(Number(value))) {
+            setRestaurantSearchName(Number(value));
+          }
+        }} />
+
+        <button data-testid="searchRestaurant" className="button searchRestaurant" onClick={() => getSpecificRestaurant(restaurantSearchName)}>
+          Search
+        </button>
+        
+      <label className="restaurantSpecific">
+      <hr style={{ border: '1px solid black', width: '100%' }} />
+        {getrestaurantSearchName.map((search) => (
+          <div key={search.restaurant_id}>
+            Restaurant ID: {search.restaurant_id} | {search.restaurant_name} | {search.restaurant_location} | {search.open_time} | {search.close_time}
+          </div>
+        ))}
+      </label>
+        </div>
 
     </div>
   );

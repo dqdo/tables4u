@@ -223,3 +223,10 @@ display : none;
   left: 10vw;
   top: 5vh;
 }
+
+
+.findRestaurantContainer{
+  position: absolute;
+  right: 62%;
+  top: 20%
+}
