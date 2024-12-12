@@ -171,6 +171,18 @@ display : none;
   top: 60vh;
 }
 
+.makeReservationContainer {
+  position: absolute;
+  justify-content: center;
+  flex-direction: column;
+  display: flex;
+  border: 1px solid black;
+  width: 400px;
+  height: 400px;
+  left: 5vw;
+  top: 40vh;
+}
+
 .credentialInfo{
   position: absolute;
   left: 75vw;
