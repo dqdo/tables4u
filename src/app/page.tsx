@@ -21,6 +21,10 @@ export default function Home() {
   const [RetrieveRestaurant, setRetrieveRestaurant] = useState('');
   const [administratorPassword, setadministratorPassword] = useState('');
   const [administratorID, setadministratorID] = useState('');
+  const [email, setEmail] = useState('');
+  const [people, setNumPeople] = useState('');
+  const [date, setDate] = useState('');
+  const [restaurantId, setRestaurantId] = useState('');
 
   const [restaurantNameList, setRestaurantNameList] = useState<string[]>([]);
 
@@ -185,9 +189,23 @@ export default function Home() {
         console.log(error);
         return ""
       });
-
   }
 
+  function makeReservation() {
+    if (email && restaurantId && people && date) {
+      instance.post('/reservations', {email: email, restaurantID: restaurantId, people: people, reservationDate: date})
+        .then(function (response) {
+          let status = response.data.statusCode;
+
+          if (status == 200) {
+            console.log("Created reservation")
+          }
+        })
+        .catch(function (error) {
+          console.log(error)
+        })
+    }
+  }
 
   function createRestaurant() {
 
@@ -200,7 +218,6 @@ export default function Home() {
           if (status == 200) {
             console.log("Created restaurant")
           }
-          andRefreshDisplay()
         })
         .catch(function (error) {
           console.log(error)
@@ -239,6 +256,20 @@ export default function Home() {
       <label style={{marginLeft: '2px'}}>Location: </label>
       <input style={{width: "90%"}} className="text" value={restaurantLocation} onChange={(e) => setRestaurantLocation(e.target.value)} />&nbsp;
       <button style={{width: "50%"}} className="button" onClick={createRestaurant}>Create</button><p></p>
+      </div>
+      
+      <div className = "makeReservationContainer">
+      <label style={{marginLeft: '10px'}}>Make a Reservation</label>
+      <hr style = {{border: '1px solid black', width: '100%'}} />
+      <label style={{marginLeft: '10px'}}>Email: </label>
+      <input style={{width: "90%", marginLeft: '10px'}} className="text" value={restaurantId} onChange={(e) => setRestaurantId(e.target.value)} />&nbsp;
+      <label style={{marginLeft: '10px'}}>Restaurant ID: </label>
+      <input style={{width: "90%", marginLeft: '10px'}} className="text" value={email} onChange={(e) => setEmail(e.target.value)} />&nbsp;
+      <label style={{marginLeft: '10px'}}>Number of People: </label>
+      <input style={{width: "90%", marginLeft: '10px'}} className="text" value={people} onChange={(e) => setNumPeople(e.target.value)} />&nbsp;
+      <label style={{marginLeft: '10px'}}>Date & Time: (yyyy-mm-dd hh:00:00)</label>
+      <input style={{width: "90%", marginLeft: '10px'}} className="text" value={date} onChange={(e) => setDate(e.target.value)} />&nbsp;
+      <button style={{width: "50%"}} className="button" onClick={makeReservation}>Create</button><p></p>
       </div>
 
       <label style={{margin: '5px'}} className="credentialInfo">{RetrieveRestaurant}</label>
