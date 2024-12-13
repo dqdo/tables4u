@@ -134,7 +134,6 @@ export default function Home() {
     instance.post('/restaurants/active_restaurants', { restaurant_id: rid })
       .then(function (response) {
         let status = response.data.statusCode;
-
         if (status == 200) {
           console.log("Activated restaurant: " + rid)
         }
@@ -317,7 +316,7 @@ export default function Home() {
         const status = response.data.statusCode;
         if (status === 200) {
           const { averageAvailability, overallUtilization } = response.data.result.summary;
-          setAvailabilityReport([{
+          setAvailabilityReport([{       
             avgAvailability: averageAvailability,
             overallUtil: overallUtilization
           }]);
@@ -326,6 +325,7 @@ export default function Home() {
       .catch(function (error) {
         console.log(error);
       });
+
   }
 
 
@@ -471,7 +471,7 @@ export default function Home() {
           </button>
           {status === 'active' && (
             <button className="button" onClick={() => reviewDaysAvailability(Number(rid), close_date)}>
-              Review Day's Availability
+              Review Day&apos;s Availability
             </button>
           )}
         </form>

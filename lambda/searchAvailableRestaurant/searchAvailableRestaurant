@@ -1,0 +1,55 @@
+import mysql from 'mysql'
+
+export const handler = async (event) => {
+
+  const date = event.queryStringParameters?.date || JSON.parse(event.body)?.date;
+
+  if(!date) {
+    return {
+      statusCode: 400,
+      body: JSON.stringify({error: "Date Parameter is required"}),
+    };
+  }
+  
+  
+  // get credentials from the db_access layer (loaded separately via AWS console)
+  
+  let ListAvailableRestaurants = (date) => {
+      return new Promise((resolve, reject) => {
+          const query = `
+            SELECT DISTINCT
+            restaurants.restaurant_id, restaurants.restaurant_name
+            FROM restaurants 
+
+            INNER JOIN restaurant_tables 
+            ON restaurants.restaurant_id = restaurant_tables.restaurant_id
+
+            LEFT JOIN reservations
+            ON restaurant_tables.table_id = reservations.table_id
+            AND reservations.restaurant_date = ?
+
+            WHERE reservations.table_id IS NULL
+            `;
+
+            const params = [date]
+   
+            pool.query(query, params, (error, results) => {
+              if (error) {
+                  return reject(error);
+              }
+              resolve(results);
+          });
+      });
+  };
+
+  const all_Available_Restaurants = await ListAvailableRestaurants(date)
+  
+  const response = {
+    statusCode: 200,
+    body: JSON.stringify({availableRestaurants : all_Available_Restaurants}),
+  };
+  
+  pool.end()     // close DB connections
+
+  return response;
+}
