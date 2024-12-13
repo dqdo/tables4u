@@ -186,14 +186,15 @@ display : none;
 
 .makeReservationContainer {
   position: absolute;
-  justify-content: center;
-  flex-direction: column;
   display: flex;
+  flex-direction: column;
+  align-items: flex-start;
   border: 1px solid black;
-  width: 400px;
-  height: 400px;
-  left: 5vw;
-  top: 40vh;
+  padding: 15px;
+  width: 320px;
+  right: 60vw;
+  top: 30vh;
+  box-sizing: border-box;
 }
 
 .credentialInfo{
@@ -204,27 +205,10 @@ display : none;
 
 .restaurantList{
   position: absolute;
-  right: 89%;
-  top: 5%
+  right: 80vw;
+  top: 10vh;
 }
 
-
-
-/* new studd*/
-
-.signOutButton {
-  position: Absolute;
-  top: -40px;
-  left: 1300px;
-  margin-bottom: 20px;
-}
-
-.restaurantListContainer {
-  position: Absolute;
-  top: 10px;
- right: 40px;
-  margin-bottom: 20px;
-}
 
 .deleteRestaurantContainer {
   position: Absolute;
@@ -247,23 +231,8 @@ display : none;
   margin-bottom: 10px;
 }
 
-/* Styling for individual sections to avoid overlap */
-.reportList {
-  margin-top: 40px;
-  padding-left: 20px;
+.findRestaurantContainer{
+  position: absolute;
+  right: 10vw;
+  top: 25vh;
 }
-
-.restaurantList {
-  margin-top: 40px;
-  padding-left: 20px;
-}
-
-
-
-
-
-
-
-
-
-
