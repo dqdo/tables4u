@@ -347,6 +347,7 @@ setReportList(List)
                         const value = e.target.value;
                         if (value === "" || !isNaN(Number(value))) {
                             setRestaurantID(value);
+                        
                         }
                     }} 
                 />
@@ -391,6 +392,8 @@ setReportList(List)
                     onChange={(e) => {
                         const value = e.target.value;
                         setRestaurantIDforReport(value);
+                        retrieveReservations()
+                    
                     }} 
                 />
     
@@ -402,6 +405,7 @@ setReportList(List)
                     onChange={(e) => {
                         const value = e.target.value;
                         setendDate(value);
+                        retrieveTableList(Number(restaurantIDforReport))
                     }} 
                 />
     
@@ -413,6 +417,7 @@ setReportList(List)
                     onChange={(e) => {
                         const value = e.target.value;
                         setStartDate(value);
+                        retrieveTableList(Number(restaurantIDforReport))
                     }} 
                 />
     
@@ -431,9 +436,6 @@ setReportList(List)
             </div>
 
 
-                <label className="function">{ ""+ retrieveTableList(Number(restaurantIDforReport))}</label>
-         
-         <label className="function">{ ""+ retrieveReservations()}</label>
 
             </div>
     
