@@ -316,7 +316,7 @@ export default function Home() {
         const status = response.data.statusCode;
         if (status === 200) {
           const { averageAvailability, overallUtilization } = response.data.result.summary;
-          setAvailabilityReport([{       
+          setAvailabilityReport([{
             avgAvailability: averageAvailability,
             overallUtil: overallUtilization
           }]);
@@ -401,11 +401,10 @@ export default function Home() {
 
 
       <label className="availabilityReport">
-        Availibility Report:
         <hr style={{ border: '1px solid black', width: '100%' }} />
         {availabilityReport.map((report) => (
           <div key={report.avgAvailability}>
-            Average Availability: {report.avgAvailability} | Overall Utilization: {report.overallUtil}
+            Availibility Report | Average Availability: {report.avgAvailability} | Overall Utilization: {report.overallUtil}
           </div>
         ))}
       </label>
@@ -432,7 +431,7 @@ export default function Home() {
 
       <div className="dateInputContainer">
         <form className="dateInput" onSubmit={(e) => e.preventDefault()}>
-          Set Date: {close_date}
+          <label>Set Date: {close_date} </label>
           <label>
             Year:
             <select className="button" value={year} onChange={(e) => setYear(e.target.value)} required>
