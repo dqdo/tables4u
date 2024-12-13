@@ -41,11 +41,6 @@ export default function Home() {
         availability: number;
     };
 
-
-    function andRefreshDisplay() {
-        forceRedraw(redraw + 1)
-    }
-
     const handleSignout = () => {
         router.push("/")
     };
@@ -83,7 +78,6 @@ export default function Home() {
                         close_time: con.close_time
                     }));
                     setRestaurantDateList(restaurants);
-                    andRefreshDisplay();
                 }
             })
             .catch(function (error) {
@@ -107,7 +101,6 @@ export default function Home() {
                         numPeople: con.numPeople
                     }));
                     setReservationList(reservations);
-                    andRefreshDisplay();
                 }
             })
             .catch(function (error) {
@@ -153,7 +146,6 @@ export default function Home() {
                     }));
                     setTableList(restaurants);
                 }
-                andRefreshDisplay();
             })
             .catch(function (error) {
 
@@ -290,7 +282,6 @@ export default function Home() {
     }
 
 
-
     function deleteRestaurant(): void {
         instance.post('/restaurants/deleted_restaurants', { restaurant_id: restaurantID })
             .then(function (response) {
@@ -312,7 +303,6 @@ export default function Home() {
                 if (status == 200) {
                     console.log("Deleted reservation")
                 }
-                andRefreshDisplay()
             })
             .catch(function (error) {
                 console.log(error)
