@@ -39,7 +39,7 @@ body {
   border-width: 2px;
 }
 
-.button{
+.button {
   font: bold 11px Arial;
   text-decoration: none;
   background-color: #EEEEEE;
@@ -58,34 +58,34 @@ body {
 }
 
 
-.emailAddressContainer{
+.emailAddressContainer {
   margin-top: 5px;
   margin-bottom: 5px;
 }
 
-.passwordContainer{
+.passwordContainer {
   margin-bottom: 5px;
 }
 
-.loginManager{
+.loginManager {
   margin-left: 20px;
 }
 
-.enterCredentials{
+.enterCredentials {
   color: black;
   border-color: black;
   margin: 5px;
 }
 
-.closeLogin{
+.closeLogin {
   color: black;
 }
 
-.enterLogin{
+.enterLogin {
   color: black;
 }
 
-.loginButtonContainer{
+.loginButtonContainer {
   position: absolute;
   left: 80%;
 }
@@ -97,7 +97,7 @@ body {
 }
 
 
-.loginButtonContainer{
+.loginButtonContainer {
   position: absolute;
   left: 75vw;
   top: 5vh;
@@ -109,70 +109,70 @@ body {
   top: 150px;
 }
 
-.Title{
+.Title {
   position: absolute;
   left: 700px;
   top: 80px;
 }
 
-.table{
+.table {
   position: absolute;
   left: 400px;
   top: 250px;
 }
 
-.function{
-display : none;
+.function {
+  display: none;
 }
 
-.Restaurants{
+.Restaurants {
   position: absolute;
   left: 700px;
   top: 100px;
 }
 
-.tables{
+.tables {
   position: absolute;
   left: 75vw;
   top: 10vh;
-  
+
 }
 
-.closed_dates{
+.closed_dates {
   position: absolute;
   left: 80%;
   top: 50%;
 }
 
-.editRestaurantContainer{
+.editRestaurantContainer {
   position: absolute;
   align-items: center;
   display: flex;
   justify-content: center;
   flex-direction: column;
   right: 70vw;
-  top: 10vh;
+  top: 15vh;
   border: black 2px solid;
 }
 
-.restaurantInfoContainer{
+.restaurantInfoContainer {
   position: absolute;
   align-items: center;
   display: flex;
   justify-content: center;
   flex-direction: column;
   right: 40vw;
-  top: 10vh;
+  top: 15vh;
   border: black 2px solid;
 }
 
-.listRestaurant{
+.listRestaurant {
   position: absolute;
-  right:85vw;
+  right: 85vw;
   top: 5vh;
 }
 
-.createRestaurantContainer{
+.createRestaurantContainer {
   position: absolute;
   justify-content: center;
   flex-direction: column;
@@ -180,8 +180,8 @@ display : none;
   border: 1px solid black;
   width: 200px;
   height: 250px;
-  left: 75vw;
-  top: 60vh;
+  left: 40vw;
+  top: 45vh;
 }
 
 .makeReservationContainer {
@@ -192,18 +192,18 @@ display : none;
   border: 1px solid black;
   padding: 15px;
   width: 320px;
-  right: 60vw;
+  right: 75vw;
   top: 30vh;
   box-sizing: border-box;
 }
 
-.credentialInfo{
+.credentialInfo {
   position: absolute;
-  left: 75vw;
-  top: 90vh;
+  left: 40vw;
+  top: 75vh;
 }
 
-.restaurantList{
+.restaurantList {
   position: absolute;
   right: 80vw;
   top: 10vh;
@@ -212,8 +212,8 @@ display : none;
 
 .deleteRestaurantContainer {
   position: Absolute;
-  top: 60px;
-  left: 10px;
+  top: 15vh;
+  left: 30vw;
   margin-bottom: 10px;
 }
 
@@ -226,13 +226,71 @@ display : none;
 
 .deleteReservationContainer {
   position: Absolute;
-  top: 120px;
-  left: 10px;
+  top: 20vh;
+  left: 30vw;
   margin-bottom: 10px;
 }
 
-.findRestaurantContainer{
+.findRestaurantContainer {
   position: absolute;
   right: 10vw;
+  top: 30vh;
+}
+
+.reservationInfo {
+  position: absolute;
+  right: 55vw;
+  top: 90vh;
+}
+
+.findDeleteReservation {
+  position: absolute;
+  justify-content: center;
+  flex-direction: column;
+  display: flex;
+  right: 45vw;
+  top: 5vh;
+  border: 1px solid black;
+}
+
+.existingReservation>div {
+  position: absolute;
+  right: 20vw;
+  top: 10vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.restaurantSpecific>div {
+  position: absolute;
+  right: 10vw;
+  top: 35vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.findAvailableContainer {
+  position: absolute;
+  justify-content: center;
+  flex-direction: column;
+  display: flex;
+  right: 15vw;
+  top: 55vh;
+}
+
+.availableRestaurants {
+  position: absolute;
+  right: 10vw;
+  top: 80vh;
+}
+
+.searchForReservation {
+  position: absolute;
+  top: 20vh;
+}
+
+.reservationSearchList {
+  position: absolute;
   top: 25vh;
+  right: 25vw;
 }

@@ -28,9 +28,15 @@ export default function Home() {
   const [getrestaurantSearchName, setGetRestaurantSearchName] = useState<{ restaurant_id: number; restaurant_name: string; restaurant_location: string, open_time: number, close_time: number }[]>([]);
   const [hour, setHour] = useState('');
   const [restaurantNameList, setRestaurantNameList] = useState<{ id: number; name: string }[]>([]);
-  const [reservation, setReservation] = useState<{ tableNumber: number; restaurantID: number; people: number; reservationDate: string; reservationTime: number; confirmationNumber: number}[]>([]);
-
+  const [reservation, setReservation] = useState<{ confirmationNumber: number; people: number; reservationDate: string; reservationTime: number; tableNumber: number }[]>([]);
+  const [confirmationCode, setConfirmationCode] = useState(0);
+  const [resEmail, setResEmail] = useState('');
+  const [existingReservation, setExistingReservation] = useState<{ table_number: number; restaurant_date: any; numPeople: number; restaurant_id: number; restaurant_name: string; restaurant_location: string }[]>([])
   const [managerPassword, setmanagerPassword] = useState('');
+  const [restaurantAvailiableSearch, setRestaurantAvailableSearch] = useState(0);
+  const [availableDate, setAvailableDate] = useState('');
+  const [availableTime, setAvailableTime] = useState('');
+  const [availableRestaurants, setAvailableRestaurants] = useState<{ restaurant_id: string; restaurant_name: string }[]>([]);
 
   React.useEffect(() => {
     if (!constants) {
@@ -178,25 +184,7 @@ export default function Home() {
       });
   }
 
-      // if (!email || !makeRestaurantId || !people || !date || !hour) {
-    //   console.log("All fields are required to make a reservation.");
-    //   return;
-    // }
-  
-    // const [year, month, day] = date.split("-").map(Number);
-    // if (!year || !month || !day) {
-    //   console.log("Invalid date format. Please use yyyy-mm-dd.");
-    //   return;
-    // }
-  
-    // const reservationDate = new Date(year, month - 1, day); // Adjust month (0-indexed)
-    // const today = new Date();
-    // today.setHours(0, 0, 0, 0);
-  
-    // if (reservationDate < today) {
-    //   console.log("The reservation date cannot be in the past.");
-    //   return;
-    // }
+
 
   function makeReservation(date: string, rid: number, time: number, r_email: string, n_people: number) {
     console.log(date)
@@ -204,29 +192,49 @@ export default function Home() {
     console.log(time)
     console.log(r_email)
     console.log(n_people)
+
+    if (!email || !makeRestaurantId || !people || !date || !hour) {
+      console.log("All fields are required to make a reservation.");
+      return;
+    }
+
+    const [year, month, day] = date.split("-").map(Number);
+    if (!year || !month || !day) {
+      console.log("Invalid date format. Please use yyyy-mm-dd.");
+      return;
+    }
+
+    const reservationDate = new Date(year, month - 1, day); 
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    if (reservationDate < today) {
+      console.log("The reservation date cannot be in the past.");
+      return;
+    }
     instance.post('/make_reservation', { restaurantID: rid, reservationDate: date, reservationTime: time, email: r_email, people: n_people })
-    .then((response) => {
-      const { statusCode, result, error } = response.data;
-      console.log(response.data)
-      // if (statusCode === 200) {
-      //   const reservations = result.reservations;
-      //   if (reservations.length > 0) {
-      //     const reservationInfo = reservations.map((con: any) => ({
-      //       table_number: con.table_number,
-      //       confirmation_number: con.confirmation_number,
-      //       table_id: con.table_id,
-      //       email: con.email,
-      //       restaurant_date: con.restaurant_date,
-      //       numPeople: con.numPeople,
-      //     }));
-      //   }
-      // }
-    })
-    .catch((error) => {
-      console.log("Error making restaurant:", error);
-    });
+      .then((response) => {
+        const { statusCode, result, error } = response.data;
+        console.log(response.data);
+
+        if (statusCode === 200) {
+          const reservationInfo = [{
+            tableNumber: result.tableNumber,
+            confirmationNumber: result.confirmationNumber,
+            people: result.people,
+            reservationDate: result.reservationDate,
+            reservationTime: result.reservationTime,
+          }];
+          setReservation(reservationInfo);
+        } else {
+          console.log("Error:", error);
+        }
+      })
+      .catch((error) => {
+        console.log("Error making reservation:", error);
+      });
   }
-  
+
 
   function getSpecificRestaurant() {
     if (!restaurantSearchName) {
@@ -256,7 +264,6 @@ export default function Home() {
       });
   }
 
-
   function createRestaurant() {
 
     if (restaurantName && restaurantLocation) {
@@ -275,6 +282,82 @@ export default function Home() {
         })
     }
   }
+
+  function cancelReservation() {
+    if (resEmail && confirmationCode) {
+      instance.post('/reservations/cancel_reservation', { confirmationNum: confirmationCode, email: resEmail })
+        .then(function (response) {
+          let status = response.data.statusCode;
+
+          if (status == 200) {
+            console.log("Canceled Reservation")
+          }
+        })
+        .catch(function (error) {
+          console.log(error)
+        })
+    }
+  }
+
+  function findReservation() {
+    if (resEmail && confirmationCode) {
+      instance
+        .post('/findExistingReservation', {
+          confirmationNum: confirmationCode,
+          email: resEmail,
+        })
+        .then((response) => {
+          const { statusCode, reservationDetails, error } = response.data;
+          console.log(response.data);
+          if (statusCode === 200) {
+            const reservationInfo = [
+              {
+                table_number: reservationDetails.table_number,
+                numPeople: reservationDetails.numPeople,
+                restaurant_date: new Date(reservationDetails.restaurant_date).toISOString().split('T')[0],
+                restaurant_name: reservationDetails.restaurant_name,
+                restaurant_id: reservationDetails.restaurant_id,
+                restaurant_location: reservationDetails.restaurant_location,
+              },
+            ];
+            setExistingReservation(reservationInfo);
+            console.log(reservationInfo);
+          } else {
+            console.error("Error fetching reservation:", error || "Unknown error");
+          }
+        })
+        .catch((error) => {
+          console.log("Error fetching restaurant:", error);
+        });
+    }
+  }
+
+  function findAvailable() {
+    if (availableDate && availableTime) {
+      const dateTime = new Date(`${availableDate}T${String(availableTime).padStart(2, '0')}:00:00Z`)
+      const isoFormat = dateTime.toISOString();
+
+      const date = `{\"date\": \"${isoFormat}\"}`;
+
+      instance.post('/findAvailableRestaurant', {
+        body: date
+      })
+        .then((response) => {
+          const { statusCode, body, error } = response.data;
+          console.log(response.data)
+          if (statusCode === 200) {
+            const parsedBody = JSON.parse(body);
+            const restaurants = parsedBody.availableRestaurants;
+            setAvailableRestaurants(restaurants);
+          }
+          console.log(availableRestaurants)
+        })
+        .catch((error => {
+          console.log(error)
+        }))
+    }
+  }
+
 
   const showLogin = (role: string) => {
     setLoginRole(role);
@@ -313,7 +396,7 @@ export default function Home() {
         <label style={{ marginLeft: '10px' }}>Make a Reservation</label>
         <hr style={{ border: '1px solid black', width: '100%' }} />
         <label style={{ marginLeft: '10px' }}>Email: </label>
-        <input style={{width: "90%", marginLeft: '10px'}} className="text" value={email} onChange={(e) => setEmail(e.target.value)} />&nbsp;
+        <input style={{ width: "90%", marginLeft: '10px' }} className="text" value={email} onChange={(e) => setEmail(e.target.value)} />&nbsp;
         <label style={{ marginLeft: '10px' }}>Restaurant ID: </label>
         <input style={{ width: "90%", marginLeft: '10px' }} min="1" max="8" className="text" value={makeRestaurantId} onChange={(e) => {
           const value = e.target.value;
@@ -353,7 +436,7 @@ export default function Home() {
 
 
       <div className="findRestaurantContainer">
-        Search Restaurant: <input
+        Search Specific Restaurant (ID): <input
           className="text"
           value={restaurantSearchName || ""}
           onChange={(e) => {
@@ -361,40 +444,101 @@ export default function Home() {
             if (!isNaN(Number(value)) || value === '') {
               setRestaurantSearchName(Number(value));
             }
-          }}
-        />
+          }} />
 
         <button data-testid="searchRestaurant" className="button searchRestaurant" onClick={() => getSpecificRestaurant()}>
           Search
         </button>
-
-        <label className="restaurantSpecific">
-          <hr style={{ border: '1px solid black', width: '100%' }} />
-          {Array.isArray(getrestaurantSearchName) && getrestaurantSearchName.length > 0 ? (
-            getrestaurantSearchName.map((search) => (
-              <div key={search.restaurant_id}>
-                Restaurant ID: {search.restaurant_id} | Restaurant Name: {search.restaurant_name} | Location: {search.restaurant_location} | Open Time {search.open_time}:00:00 | {search.close_time}:00:00
-              </div>
-            ))
-          ) : (
-            <div>No results found for the given Restaurant ID.</div>
-          )}
-        </label>
-
       </div>
+
+      <div className="findAvailableContainer">
+        Search Available Restaurant:
+        <label style={{ marginLeft: '10px' }}>Date: (yyyy-mm-dd)</label>
+        <input style={{ width: "90%", marginLeft: '10px' }} className="text" value={availableDate} onChange={(e) => setAvailableDate(e.target.value)} />&nbsp;
+        <label style={{ marginLeft: '10px' }}>Hour: (0-23)</label>
+        <input style={{ width: "90%", marginLeft: '10px' }} min="0" max="23" className="text" value={availableTime} onChange={(e) => {
+          const value = e.target.value;
+          if (value === "" || (Number(value) >= 0 && Number(value) <= 23)) {
+            setAvailableTime(value);
+          }
+        }} />&nbsp;
+
+        <button data-testid="searchRestaurant" className="button searchAvailableRestaurant" onClick={() => findAvailable()}>
+          Search
+        </button>
+      </div>
+
+      <label className="restaurantSpecific">
+        <hr style={{ border: '1px solid black', width: '100%' }} />
+        {Array.isArray(getrestaurantSearchName) && getrestaurantSearchName.length > 0 ? (
+          getrestaurantSearchName.map((search) => (
+            <div key={search.restaurant_id}>
+              <label>Restaurant ID: {search.restaurant_id}</label>
+              <label>Restaurant Name: {search.restaurant_name}</label>
+              <label>Location: {search.restaurant_location}</label>
+              <label>Open Time: {search.open_time}:00:00</label>
+              <label>Close Time: {search.close_time}:00:00</label>
+            </div>
+          ))
+        ) : (
+          <div>No results found for the given Restaurant ID.</div>
+        )}
+      </label>
+
+
 
       <label className="reservationInfo">
-  <hr style={{ border: "1px solid black", width: "100%" }} />
-  {reservation.length > 0 ? (
-    reservation.map((res) => (
-      <div key={res.confirmationNumber}>
-        <p>Confirmation Number: {res.confirmationNumber}</p>
+        <hr style={{ border: "1px solid black", width: "100%" }} />
+        {
+          reservation.map((res) => (
+            <div key={res.confirmationNumber}>
+              Confirmation Number: {res.confirmationNumber} | Number of People: {res.people} | Date: {res.reservationDate} | Time: {res.reservationTime} | Table Number: {res.tableNumber}
+            </div>
+          ))
+        }
+      </label>
+
+      <label className="existingReservation">
+        {existingReservation.map((res) => (
+          <div key={res.restaurant_id}>
+            <label>Restaurant ID: {res.restaurant_id}</label>
+            <label>Restaurant Name: {res.restaurant_name}</label>
+            <label>Number of People: {res.numPeople}</label>
+            <label>Date: {res.restaurant_date}</label>
+            <label>Table Number: {res.table_number}</label>
+            <label>Location: {res.restaurant_location}</label>
+          </div>
+        ))}
+      </label>
+
+      <label className="availableRestaurants">
+        {availableRestaurants.map((res) => (
+          <div key={res.restaurant_id}>
+            <label>Restaurant ID: {res.restaurant_id}</label>
+            <label> | </label>
+            <label>Restaurant Name: {res.restaurant_name}</label>
+          </div>
+        ))}
+      </label>
+
+      <div className="findDeleteReservation">
+        <label>Find or Cancel Reservation</label>
+        <label>Enter Email: </label>
+        <input className="text" value={resEmail} onChange={(e) => setResEmail(e.target.value)} />&nbsp;
+        <label>Confirmation Code</label>
+        <input className="text" value={confirmationCode} onChange={(e) => {
+          const value = e.target.value;
+          if (value === "" || !isNaN(Number(value))) {
+            setConfirmationCode(Number(value));
+          }
+        }} />
+        <button className="button" onClick={findReservation}>
+          Find Reservation
+        </button>
+        <button className="button" onClick={cancelReservation}>
+          Cancel Reservation
+        </button>
       </div>
-    ))
-  ) : (
-    <p>No reservations yet.</p>
-  )}
-</label>
 
     </div>
   );
