@@ -255,7 +255,7 @@ body {
 
 .existingReservation>div {
   position: absolute;
-  right: 20vw;
+  right: 30vw;
   top: 10vh;
   display: flex;
   flex-direction: column;
