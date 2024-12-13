@@ -36,6 +36,7 @@ export const handler = async (event) => {
 
             WHERE reservations.table_id IS NULL
             AND closed_days.restaurant_date IS NULL
+            AND restaurants.status = 'active';
             `;
 
             const params = [dateFormat, hour, dateFormat]
