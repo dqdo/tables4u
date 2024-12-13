@@ -111,16 +111,13 @@ export default function Home() {
 
   async function retrieveManager(id: number) {
     try {
-      // Make the HTTP request and await the response
       const response = await instance.get('/restaurants');
       let password;
       let status = response.data.statusCode;
 
       if (status == 200) {
-        // Iterate through constants and check for the matching restaurant_id
         for (let con of response.data.constants) {
           if (con.restaurant_id === id) {
-            // Set the manager's password
             const password = con.password
             setmanagerPassword(con.password);
             return password
@@ -130,7 +127,7 @@ export default function Home() {
 
     } catch (error) {
       console.error(error);
-      return ""; // Return empty string or handle error as needed
+      return ""; 
     }
   }
 
